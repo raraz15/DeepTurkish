@@ -112,8 +112,8 @@ def save_checkpoint(new_state, metric, iter_meter):
 
     if iter_meter.get_epoch() > 1: # compare with best previous epoch
 
-        #old_state = torch.load(file_dir)
-        old_state = load_checkpoint(file_dir)
+        old_state = torch.load(file_dir)
+        #old_state = load_checkpoint(file_dir)
 
         if old_state[metric] > new_state[metric]:
             state = new_state
