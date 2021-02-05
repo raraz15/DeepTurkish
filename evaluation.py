@@ -19,10 +19,9 @@ def test(model, criterion, decoder, test_loader):
 	with torch.no_grad():
 		test_loss = 0
 		test_cer, test_wer = [], []
-		for spectrograms,input_lengths,labels,label_lengths in test_loader:
+		for spectrograms, input_lengths, labels, label_lengths in test_loader:
 
 			spectrograms, labels = spectrograms.to(device), labels.to(device)
-
 			output = model(spectrograms)  # (batch, time, n_class)
 			output = F.log_softmax(output, dim=-1)       
 			log_probs = torch.clone(output).cpu().numpy()           

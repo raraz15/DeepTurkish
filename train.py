@@ -67,7 +67,7 @@ def main(hyperparameters, data_parameters, decoder, project_name):
                 single_epoch(hyperparameters, data_parameters, model, criterion, 
                      optimizer, scheduler, decoder, train_loader, validation_loader, iter_meter)
         
-        av_test_loss, avg_cer, avg_wer = test(model, criterion, decoder, test_loader) # Test on the test set 
+        avg_test_loss, avg_cer, avg_wer = test(model, criterion, decoder, test_loader) # Test on the test set 
 
         wandb.log({'test_avg_loss':avg_test_loss,'test_avg_cer':avg_cer, 'test_avg_wer':avg_wer, 'epoch':iter_meter.get_epoch()})
 
@@ -79,7 +79,7 @@ def single_epoch(hyperparameters, data_parameters, model, criterion,
 
     train(model, criterion, optimizer, scheduler, train_loader, iter_meter)  
 
-    av_validation_loss, avg_cer, avg_wer = test(model, criterion, decoder, validation_loader)
+    avg_validation_loss, _, _ = test(model, criterion, decoder, validation_loader)
 
     state = {'hyperparameters': hyperparameters,
             'data_parameters': data_parameters,
@@ -88,10 +88,10 @@ def single_epoch(hyperparameters, data_parameters, model, criterion,
             'model_dict': model.state_dict(),
             'optim_dict': optimizer.state_dict(),
             'scheduler_dict': scheduler.state_dict(),
-            'av_validation_loss':av_validation_loss # metric to compare
+            'avg_validation_loss':avg_validation_loss # metric to compare
     } 
 
-    utils.save_checkpoint(state, 'av_validation_loss', iter_meter)
+    utils.save_checkpoint(state, 'avg_validation_loss', iter_meter)
 
 
 def train(model, criterion, optimizer, scheduler, loader, iter_meter):
