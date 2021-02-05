@@ -30,8 +30,8 @@ def make_model(hparams, blank, steps_per_epoch, device):
         model_state, optimizer_state, scheduler_state = load_checkpoint(hparams['model_dir'])
         
         model.load_state_dict(model_state)
-        optimizer.load_state_dict(optimizer_state) 
-        scheduler.load_state_dict(scheduler_state)
+        #optimizer.load_state_dict(optimizer_state) 
+        #scheduler.load_state_dict(scheduler_state)
 
     return model, criterion, optimizer, scheduler
 

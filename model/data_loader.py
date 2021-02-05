@@ -21,14 +21,15 @@ def make_loaders(data_parameters, sortagrad=False):
     df_train = pd.read_pickle(data_parameters['dataframe_dir_train']) # Read the Dataframes
     df_test = pd.read_pickle(data_parameters['dataframe_dir_test'])
   
-    train_val_partition, train_val_labels = create_train_val_partition(df_train, data_parameters['split_ratio'],
+    train_val_partition, train_val_labels = create_train_val_partition(df_train, data_parameters['split_ratio'], # partition the training set
                                                                              data_parameters['batch_size'])
     test_partition, test_labels = create_test_partition(df_test,data_parameters['batch_size']) 
 
-    train_set = Dataset_readcsv(train_val_partition['train'],train_val_labels,data_parameters['train_dir'])
-    validation_set = Dataset_readcsv(train_val_partition['validation'],train_val_labels,data_parameters['train_dir'])
-    test_set = Dataset_readcsv(test_partition['test'],test_labels,data_parameters['test_dir'])
+    train_set = Dataset(train_val_partition['train'],train_val_labels,data_parameters['train_dir']) # Create a Dataset Object
+    validation_set = Dataset(train_val_partition['validation'],train_val_labels,data_parameters['train_dir'])
+    test_set = Dataset(test_partition['test'],test_labels,data_parameters['test_dir'])
     
+    # Construct the data loaders with or without SortaGrad
     if sortagrad:
         
         # Set the shuffle false for the first epoch
@@ -54,7 +55,7 @@ def make_loaders(data_parameters, sortagrad=False):
     return train_loader, validation_loader, test_loader
 
 
-class Dataset_readcsv(torch.utils.data.Dataset):
+class Dataset(torch.utils.data.Dataset):
     
     def __init__(self, name_list, transcriptions, data_dir):
         """
@@ -75,7 +76,7 @@ class Dataset_readcsv(torch.utils.data.Dataset):
         self.data_dir = data_dir
         
     def __len__(self):
-        'Reutns the total number of samples'
+        """Reutns the total number of samples"""
         
         return len(self.name_list)
     
@@ -130,7 +131,7 @@ def pad_collate_fn(data):
         parameters:
         -----------
         
-            data (tupple??): features has shape T,F
+            data (tupple): features has shape (T,F)
     
         returns:
         --------
@@ -141,12 +142,12 @@ def pad_collate_fn(data):
             target_lengths (tensor) : dtype = torch.long
     """
     
-    X,N_frames,y,S = zip(*data) # collect all Xs in a single tuple....
+    X, N_frames, y, S = zip(*data) # collect all Xs in a single tuple....
 
-    # Dtype is mandated by native pytorch
+    # Dtype is required by native pytorch
     frame_lengths = torch.tensor(N_frames,dtype=torch.long) #Frame lengths of each instance 
         
-    features = torch.nn.utils.rnn.pad_sequence(X,batch_first=True,padding_value=-80.0) #.to(device) 
+    features = torch.nn.utils.rnn.pad_sequence(X, batch_first=True, padding_value=-80.0) 
     features = torch.transpose(features,1,2).contiguous().unsqueeze(dim=1) # (B,1,F,T)
         
     target_lengths = torch.tensor(S,dtype=torch.long) # corresponding target lengths
