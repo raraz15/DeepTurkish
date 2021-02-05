@@ -2,7 +2,7 @@ from __future__ import division
 from __future__ import print_function
 import math
 import numpy as np
-import decoders.Common
+import decoders.Common as Common
 
 # reference: https://github.com/githubharald/CTCDecoder, advancement raraz15,
 # everything is converted to log probabilities.

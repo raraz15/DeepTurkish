@@ -1,4 +1,4 @@
-import decoders.Loss
+import decoders.Loss as Loss
 
 # reference https://github.com/githubharald/CTCDecoder, advancement : raraz15
 
